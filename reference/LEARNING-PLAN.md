@@ -1,15 +1,15 @@
-# Zero to Next.js — A Full-Time Learning Plan
+# Zero to Clojure HTTP — A Full-Time Learning Plan
 
-**Audience:** a beginner who can already write `console.log`, a `for` loop, and an `if`, but nothing beyond that.
+**Audience:** a beginner who can already write `println`, a `for` loop, and an `if`, but nothing beyond that.
 **Commitment:** 3+ hours/day, ~5–6 days a week.
-**End state:** comfortable in JavaScript → TypeScript → React → Next.js, with a working DSA foundation on LeetCode.
+**End state:** solid Clojure fundamentals, then a small HTTP API on **Ring**, **Compojure**, and **Jetty**, with algorithm practice on Exercism (or LeetCode if you stay on the original JS track).
 
 There are two documents:
 
 | File | Who it's for |
 |---|---|
 | `LEARNING-PLAN.md` (this file) | You and her — the roadmap, the routine, what to learn when |
-| `CURSOR-BUILD-SPEC.md` | Hand this to Cursor — it builds the practice repo, all 190 exercises, and the auto-grader |
+| `CURSOR-BUILD-SPEC.md` | Hand this to Cursor — it builds the practice repo, all 228 exercises (190 language + 38 HTTP), and the auto-grader |
 
 ---
 
@@ -55,12 +55,12 @@ The review block is the one people skip and it's the one that makes it stick. Do
 |---|---|---|---|
 | **1. JavaScript** | 1–4 | 15 levels, 190 drills. Variables → recursion → hashing → async. | All levels green |
 | **2. DSA foundation** | 1–6 (parallel) | Striver Step 1 & 2 on LeetCode | ~60 problems solved |
-| **3. TypeScript** | 5–6 | Types, interfaces, generics. Re-do 30 JS drills in TS. | `ts-drills/` green |
-| **4. Web fundamentals** | 7–8 | HTML, CSS, the DOM, fetch, browser dev tools | 2 static pages + 1 DOM app |
-| **5. React** | 9–11 | Components, props, state, effects, forms, lists | 3 small apps |
-| **6. Next.js** | 12–16 | App Router, server components, routing, data, API routes, DB, auth, deploy | 1 deployed full-stack app |
+| **3. Ring handlers** | 5–6 | Request/response maps, `ring.util.response`, manual routing, JSON bodies | Level `16-ring-handlers` green |
+| **4. Compojure** | 6–7 | `GET`/`POST`, path and query params, combining routes | Level `17-compojure` green |
+| **5. Middleware** | 7–8 | Handler wrappers, auth header, JSON middleware, ordering | Level `18-middleware` green |
+| **6. Jetty** | 8–9 | `run-jetty`, HTTP client, in-process API capstone | Level `19-jetty` green + notes API |
 
-**A note on Phase 4:** you didn't mention HTML/CSS/DOM, but jumping from Node into Next.js without them is the single most common way this kind of plan stalls. React is a way of producing HTML; if she doesn't know what a `<div>`, a flexbox, or an event listener is, React becomes memorisation. Two weeks here saves a month later. If you want to compress, cut it to one week and skip CSS animation/grid depth — but don't skip it entirely.
+**Why this order:** Ring handlers are pure functions — no server until level 19. Compojure is sugar on top of the same model. Middleware is easier once routing is automatic. Jetty ties it together with real TCP, still graded via stdout from a short-lived process.
 
 ---
 
@@ -129,7 +129,7 @@ She reads the problem on the Striver sheet, then solves it **on LeetCode in Java
 | 9 | Step 4 — Binary Search (1D) | after Phase 1 | ~13 |
 | 10 | Step 5 — Strings (Basic) | 09 | ~7 |
 
-**Target by end of Phase 1: ~60 problems.** Steps 2 and 3 are the first real algorithmic work — she should still be on those when Phase 3 (TypeScript) begins. DSA continues in the background for months; it does not need to finish before web development starts.
+**Target by end of Phase 1: ~60 problems.** Steps 2 and 3 are the first real algorithmic work — she can still be on those when Phase 3 (Ring) begins. DSA continues in the background; it does not need to finish before HTTP drills start.
 
 ### LeetCode discipline
 
@@ -139,87 +139,66 @@ She reads the problem on the Striver sheet, then solves it **on LeetCode in Java
 
 ---
 
-## 6. Phase 3 — TypeScript (outline)
+## 6. Phase 3 — Ring handlers (`16-ring-handlers`, 12 drills)
 
-Do not treat TS as a new language. It's JavaScript plus annotations, and she'll already know the JavaScript.
-
-**Setup:** a `ts-drills/` folder in the same repo. Same watcher, same PASS/FAIL loop, `tsx` instead of `node`. `strict: true` from day one — learning TS with `strict: false` teaches the wrong habits.
+Same PASS/FAIL loop as Phase 1. Each file defines a handler (or uses helpers) and prints `:status`, `:body`, or selected fields — no network yet.
 
 **Topics, in order:**
 
-1. Why types exist — a bug demo she can feel
-2. Primitive annotations: `string`, `number`, `boolean`, `null`, `undefined`
-3. Arrays and tuples: `number[]`, `[string, number]`
-4. Object types and `interface`
-5. `type` aliases; `type` vs `interface`
-6. Union and literal types (`"admin" | "user"`)
-7. Optional properties, `readonly`
-8. Function types: parameter and return annotations
-9. `any` vs `unknown` vs `never` — and why `any` is a smell
-10. Type narrowing: `typeof`, `in`, truthiness guards
-11. Generics: `Array<T>`, then writing her own `identity<T>`
-12. Utility types: `Partial`, `Pick`, `Omit`, `Record`
-13. Enums (and why literal unions are usually better)
-14. `tsconfig.json` — what the flags mean
-15. Reading and fixing real compiler errors
+1. A response map: `:status`, `:headers`, `:body`
+2. `ring.util.response`: `response`, `status`, `content-type`, `header`
+3. `not-found`, `redirect`
+4. Reading `:request-method`, `:uri`, `:headers` from a GIVEN request map
+5. Branching on method + path without a router library
+6. JSON response bodies with Cheshire + `application/json`
 
-**Practice:** re-do 30 chosen JS drills (levels 08–14) with full type annotations. Same expected outputs, so the grader is reused as-is. Then convert 5 LeetCode solutions to TS.
-
-**Duration:** 8–10 days full-time.
+**Duration:** ~4–5 days full-time.
 
 ---
 
-## 7. Phase 4 — Web fundamentals (outline)
+## 7. Phase 4 — Compojure (`17-compojure`, 10 drills)
 
-1. HTML: semantic structure, forms, attributes, accessibility basics
-2. CSS: box model, flexbox, grid, positioning, responsive units, one component library-free layout built by hand
-3. DOM: `querySelector`, event listeners, creating and removing elements
-4. `fetch` and a public JSON API
-5. Browser dev tools: elements panel, console, network tab
+Compojure turns route definitions into one Ring handler.
 
-**Projects:** a personal profile page (HTML/CSS only), then a to-do app in vanilla JS with DOM manipulation, then a page that fetches and renders data from an API.
+**Topics:**
 
-**Duration:** 8–12 days.
+1. `GET` / `POST` routes, static paths
+2. Path params (`:id`)
+3. Query params (`wrap-params`, `wrap-keyword-params`)
+4. `context`, catch-all / not-found route
+5. Combining route tables; one JSON “item by id” route
 
----
-
-## 8. Phase 5 — React (outline)
-
-1. Why components; JSX and how it differs from HTML
-2. Props and one-way data flow
-3. `useState` — the mental model of re-rendering
-4. Conditional rendering, lists, `key`
-5. Events and controlled form inputs
-6. `useEffect` and cleanup
-7. Lifting state up; composition over prop drilling
-8. `useRef`, `useMemo` (lightly)
-9. Custom hooks
-10. Fetching data, loading/error states
-
-**Projects:** counter → to-do app → a search-and-filter app against a real API.
-
-**Duration:** ~3 weeks.
+**Duration:** ~3–4 days full-time.
 
 ---
 
-## 9. Phase 6 — Next.js (outline)
+## 8. Phase 5 — Middleware (`18-middleware`, 8 drills)
 
-1. App Router: `app/`, `page.tsx`, `layout.tsx`, file-based routing
-2. Server Components vs Client Components — the `"use client"` boundary
-3. Dynamic routes and route params
-4. Data fetching in server components; caching and revalidation
-5. Server Actions and forms
-6. Route Handlers (`app/api/.../route.ts`)
-7. `loading.tsx`, `error.tsx`, Suspense
-8. `next/image`, `next/link`, metadata
-9. Styling: Tailwind
-10. Database: Postgres + Prisma or Drizzle
-11. Auth: Auth.js
-12. Deploy on Vercel; environment variables
+A middleware is `(fn [handler] (fn [request] ...))`.
 
-**Capstone:** one full-stack app she designs — auth, a database, CRUD, deployed and shareable. Something she actually wants to exist, not a tutorial clone. Motivation matters more than scope here.
+**Topics:**
 
-**Duration:** 4–5 weeks.
+1. Adding response headers in middleware
+2. Simple token check → 401
+3. `ring.middleware.json-params` / JSON response helpers
+4. Order of middleware — inner vs outer behavior
+
+**Duration:** ~2–3 days full-time.
+
+---
+
+## 9. Phase 6 — Jetty (`19-jetty`, 8 drills)
+
+**Topics:**
+
+1. `ring.adapter.jetty/run-jetty` with `:join? false`, port `0`
+2. `babashka.http-client` against `localhost`
+3. Stop the server before exit so the grader finishes
+4. Capstone: in-memory notes API — fixed transcript printed to stdout
+
+**Duration:** ~3–4 days full-time.
+
+**After the repo:** deploy a small Ring app (Docker, Railway, or a VPS), add a database (next step outside this drill repo).
 
 ---
 
@@ -227,11 +206,10 @@ Do not treat TS as a new language. It's JavaScript plus annotations, and she'll 
 
 | Gate | Test |
 |---|---|
-| Leave Phase 1 | All 190 drills green. Can write "count vowels in a string" and "find second largest in an array" from a blank file, no reference, in under 5 minutes each. |
-| Leave Phase 3 | Can annotate an unannotated JS file and get zero `any`s. Can read a TS error and explain what it means. |
-| Leave Phase 4 | Can build a responsive two-column layout from a screenshot without looking up flexbox. |
-| Leave Phase 5 | Can build a filterable list from an API, from scratch, in one sitting. |
-| Done | The capstone is deployed, and she can explain every file in it. |
+| Leave Phase 1 | All 190 drills green. Can write "count vowels in a string" and "second largest distinct number in a vector" from a blank file in under 5 minutes each. |
+| Leave Phase 3 | Can explain request vs response map keys and write a handler that returns 404 for unknown paths without Compojure. |
+| Leave Phase 5 | Can add auth middleware and explain why order matters. |
+| Done (Phase 6) | Level 19 green; can sketch a Compojure + Jetty app from memory and explain where routing, middleware, and the adapter sit. |
 
 ---
 

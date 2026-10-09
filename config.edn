@@ -1,4 +1,6 @@
 {:clear-screen true
  :timeout-ms 5000
+ :level-timeout-ms {"17-compojure" 30000
+                    "19-jetty" 30000}
  :strict-progression true
  :solution-unlock-after-failures 3}

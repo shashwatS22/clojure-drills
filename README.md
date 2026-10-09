@@ -5,11 +5,13 @@ Auto-graded Clojure practice: open an exercise under `levels/`, write code, save
 ## Requirements
 
 - [Babashka](https://github.com/babashka/babashka) 1.4+ (`bb --version`)
+- [Clojure CLI](https://clojure.org/guides/install_clojure) for levels **17-compojure** and **19-jetty** (Compojure and Jetty do not run under Babashka)
 
 On macOS with Homebrew:
 
 ```bash
 brew install borkdude/brew/babashka
+brew install clojure/tools/clojure
 ```
 
 ## Quick start
@@ -61,10 +63,11 @@ Level 01 — 1/12 done
 
 ## Layout
 
-- `levels/` — your exercises (15 levels, 190 drills)
+- `levels/` — your exercises (19 levels, 228 drills)
+- `deps.edn` — Clojure CLI deps for Compojure/Jetty exercises
 - `stubs/` — pristine copies used by `bb reset`
 - `.solutions/` — reference solutions (for `bb solution` and generating expected output)
 - `runner/` — watcher and grader (Babashka)
-- `reference/` — original JavaScript bootcamp spec (for authors)
+- `reference/` — learning plan and build spec (includes Ring/Jetty track)
 
 See [LEARNING-PLAN.md](LEARNING-PLAN.md) for pacing and how this pairs with algorithm practice.

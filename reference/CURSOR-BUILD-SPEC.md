@@ -675,6 +675,74 @@ For 1 and 2 she creates the helper files herself — the stub explains this. The
 
 ---
 
+## 8b. Clojure HTTP track — levels 16–19 (38 drills)
+
+**Port note:** The `clojure-drills` repo implements these levels in Babashka with Maven deps on `ring/ring-core`, `ring/ring-jetty-adapter`, and `compojure/compojure`. Exercise files are `.clj`; grading is stdout vs `.expected.txt` (same as levels 01–15). Level `19-jetty` uses a per-level timeout of ~20s.
+
+Each exercise: comment header (TASK, HINT, GIVEN), learner code below GIVEN. Handlers call `(handler request)` on a GIVEN `sample-request` unless the task says otherwise; print only what the Expected column shows.
+
+### Level 16 — `16-ring-handlers` (12)
+
+| # | File | Task | Expected |
+|---|---|---|---|
+| 1 | `01-response-map` | Build `{:status 200 :headers {} :body "ok"}` and print `:status` then `:body`. | `200⏎ok` |
+| 2 | `02-ring-response` | Use `(response "hello")` from `ring.util.response`; print `:status` and `:body`. | `200⏎hello` |
+| 3 | `03-status-code` | `(-> (response "created") (status 201))`; print `:status` and `:body`. | `201⏎created` |
+| 4 | `04-content-type` | `(-> (response "x") (content-type "text/plain"))`; print `(get-in resp [:headers "Content-Type"])`. | `text/plain` |
+| 5 | `05-header` | Add custom header `X-App` `drills` via `header`; print that header value from the response. | `drills` |
+| 6 | `06-not-found` | Call `(not-found {})`; print `:status` and `:body`. | `404⏎{}` |
+| 7 | `07-redirect` | `(redirect "/home")`; print `:status` and `(get-in resp [:headers "Location"])`. | `302⏎/home` |
+| 8 | `08-read-request` | GIVEN request with `:uri` `/api` and `:request-method :get`; print method (name) and uri. | `get⏎/api` |
+| 9 | `09-read-header` | GIVEN request with header `"authorization"` `"Bearer secret"`; print the header (keys are lower-case strings). | `Bearer secret` |
+| 10 | `10-method-dispatch` | Handler: `GET` + `/health` → body `up`, else `not-found`; test with GIVEN health request; print `:status` and `:body`. | `200⏎up` |
+| 11 | `11-path-dispatch` | Handler: `/users` → `users`, `/items` → `items`, else 404; GIVEN `/items`; print `:status` and `:body`. | `200⏎items` |
+| 12 | `12-json-body` | Handler returns JSON `{"ok":true}` with Cheshire + `content-type application/json`; GIVEN any request; print `:status` then raw `:body` string. | `200⏎{"ok":true}` |
+
+### Level 17 — `17-compojure` (10)
+
+| # | File | Task | Expected |
+|---|---|---|---|
+| 1 | `01-get-route` | `(GET "/ping" [] (response "pong"))` inside `routes`; call app with GIVEN GET `/ping`; print `:body`. | `pong` |
+| 2 | `02-post-route` | POST `/echo` returns body from `:body` param; GIVEN POST with body `hi`; print response body. | `hi` |
+| 3 | `03-path-param` | GET `/users/:id` returns `(str "user-" id)`; GIVEN `/users/42`; print `:body`. | `user-42` |
+| 4 | `04-query-param` | GET `/search` with `wrap-params`; return `q` from params; GIVEN uri `/search?q=clojure`; print `:body`. | `clojure` |
+| 5 | `05-keyword-params` | Same with `wrap-keyword-params`; print `:q` from `:params`. | `clojure` |
+| 6 | `06-not-found-route` | Routes only `/a`; GIVEN `/z`; print `:status`. | `404` |
+| 7 | `07-context` | `(context "/api" [] (GET "/v1" [] (response "v1")))`; GIVEN `/api/v1`; print `:body`. | `v1` |
+| 8 | `08-combine-routes` | Two `defroutes` combined with `routes`; hit second route; print `:body`. | `second` |
+| 9 | `09-json-item` | GET `/items/:id` returns JSON map with `:id` keyword; GIVEN id 7; print `:body` (Cheshire string). | `{"id":7}` |
+| 10 | `10-method-not-allowed` | Only GET on `/x`; GIVEN POST `/x`; print `:status`. | `404` |
+
+### Level 18 — `18-middleware` (8)
+
+| # | File | Task | Expected |
+|---|---|---|---|
+| 1 | `01-wrap-log` | Middleware prints `hit` then calls handler; wrap identity handler; one request; print middleware line then `:body`. | `hit⏎ok` |
+| 2 | `02-add-header` | Middleware adds `X-Trace` `1`; print header from response. | `1` |
+| 3 | `03-auth-ok` | Require header `x-token` `open`; GIVEN valid token; print `:status` and `:body`. | `200⏎secret` |
+| 4 | `04-auth-fail` | Same middleware; GIVEN no token; print `:status`. | `401` |
+| 5 | `05-json-body` | Use `wrap-json-body` + parse; POST body `{"n":3}`; handler returns `(str (* 2 n))`; print `:body`. | `6` |
+| 6 | `06-json-response` | `wrap-json-response` on handler returning `{:a 1}`; print `:body` as string. | `{"a":1}` |
+| 7 | `07-order-outer` | Stack: outer adds header A, inner adds B; print both header values space-separated. | `A B` |
+| 8 | `08-order-inner` | Swap order; print both values (order reflects which wrapper runs last on response). | `B A` |
+
+### Level 19 — `19-jetty` (8)
+
+All exercises: `(run-jetty app {:port 0 :join? false})`, read actual port from server, HTTP call, print listed lines, `(.stop server)`. Do not print the port number.
+
+| # | File | Task | Expected |
+|---|---|---|---|
+| 1 | `01-hello-jetty` | App returns `hello`; GET `/`; print response body. | `hello` |
+| 2 | `02-status-line` | App returns 201 + `made`; print status and body on two lines. | `201⏎made` |
+| 3 | `03-compojure-jetty` | Compojure GET `/ping` → `pong`; print body. | `pong` |
+| 4 | `04-not-found-jetty` | GET `/missing`; print status. | `404` |
+| 5 | `05-query-jetty` | GET `/echo?q=jetty`; print body. | `jetty` |
+| 6 | `06-post-json-jetty` | POST JSON `{"x":2}` to `/double`; print body. | `4` |
+| 7 | `07-middleware-jetty` | Auth middleware on Jetty; request with token; print body. | `ok` |
+| 8 | `08-notes-api` | In-memory notes: POST creates, GET lists; run POST `{"title":"a"}` then GET `/notes`; print two lines: status then JSON array length as number. | `201⏎1` |
+
+---
+
 ## 9. Build order for Cursor
 
 Do these in sequence. Don't start a step until the previous one's acceptance criteria pass.

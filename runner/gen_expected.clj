@@ -9,9 +9,11 @@
         sol (resolve/solution-path id :root root)
         exp (resolve/expected-path id :root root)
         tst (resolve/test-path id :root root)
-        timeout-ms (:timeout-ms (run-one/slurp-config) 5000)]
+        cfg (run-one/slurp-config)
+        level (:level (resolve/parse-id id))
+        timeout-ms (run-one/timeout-for-level level cfg)]
     (when-not (fs/exists? tst)
-      (let [result (run-one/capture-stdout sol timeout-ms)]
+      (let [result (run-one/capture-stdout sol timeout-ms :level-name level)]
         (case (:status result)
           :pass
           (do

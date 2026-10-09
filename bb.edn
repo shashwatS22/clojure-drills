@@ -1,4 +1,7 @@
 {:paths ["."]
+ :deps {ring/ring-core {:mvn/version "1.11.0"}
+        ring/ring-jetty-adapter {:mvn/version "1.11.0"}
+        compojure/compojure {:mvn/version "1.7.1"}}
  :tasks
  {dev {:doc "Watch levels/ and grade on save"
        :task (shell "bb" "-m" "runner.cli" "dev")}
