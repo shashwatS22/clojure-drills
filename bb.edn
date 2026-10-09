@@ -1,0 +1,20 @@
+{:paths ["."]
+ :tasks
+ {dev {:doc "Watch levels/ and grade on save"
+       :task (shell "bb" "-m" "runner.cli" "dev")}
+  check {:doc "Grade one exercise"
+         :task (apply shell "bb" "-m" "runner.cli" "check" *command-line-args*)}
+  check-level {:doc "Grade all exercises in a level (add --solutions to grade reference solutions)"
+               :task (apply shell "bb" "-m" "runner.cli" "check:level" *command-line-args*)}
+  progress {:doc "Show progress dashboard"
+            :task (shell "bb" "-m" "runner.cli" "progress")}
+  solution {:doc "Show reference solution (locked until 3 failures)"
+            :task (apply shell "bb" "-m" "runner.cli" "solution" *command-line-args*)}
+  gen-expected {:doc "Regenerate .expected.txt from .solutions/"
+                :task (shell "bb" "-m" "runner.cli" "gen:expected")}
+  reset {:doc "Restore stub(s) and clear progress"
+         :task (apply shell "bb" "-m" "runner.cli" "reset" *command-line-args*)}
+  verify-readmes {:doc "Run README code snippets"
+                   :task (shell "bb" "-m" "runner.cli" "verify:readmes")}
+  test {:doc "Run runner unit tests"
+        :task (shell "bb" "-m" "runner.grade-test")}}}

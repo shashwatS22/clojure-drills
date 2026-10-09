@@ -1,0 +1,4 @@
+{:clear-screen true
+ :timeout-ms 5000
+ :strict-progression true
+ :solution-unlock-after-failures 3}

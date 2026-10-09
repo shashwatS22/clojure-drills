@@ -1,0 +1,2 @@
+(println (> 5 3))
+(println (= 5 "5"))

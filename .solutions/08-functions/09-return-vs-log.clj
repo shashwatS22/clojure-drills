@@ -1,0 +1,5 @@
+(defn returns-five [] 5)
+(defn prints-five [] (println 5))
+(prn (returns-five))
+(prints-five)
+(prn (prints-five))

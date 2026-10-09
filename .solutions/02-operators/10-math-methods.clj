@@ -1,0 +1,5 @@
+(println (Math/abs -7))
+(println (Math/pow 2 10))
+(println (Math/sqrt 144))
+(println (Math/round 4.6))
+(println (max 3 9 2))

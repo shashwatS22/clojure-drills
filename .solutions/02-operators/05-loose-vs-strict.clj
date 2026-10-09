@@ -1,0 +1,6 @@
+(println (= 1 "1"))
+(println (= 1 (Integer/parseInt "1")))
+(println (= 0 false))
+(println (= 0 (if false 1 0)))
+(println (= nil nil))
+(println (not= nil false))

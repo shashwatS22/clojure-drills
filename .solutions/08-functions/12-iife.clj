@@ -1,0 +1,1 @@
+((fn [] (println "ran immediately")))
